@@ -125,6 +125,10 @@ setInterval(function() {
           }
           //console.log(centerx,centery);
           
+
+          //***what happens to centerx and centery when target is out of bounds?
+
+
           //SO FAR SO GOOD!
           
           if (maxArea > 0){
@@ -152,14 +156,16 @@ setInterval(function() {
 
             controller_output = Kp*error_avg+ Ki*integral + Kd*derivative;
 
-            text_buf = avg_dt.toString() + "\t" + centerx.toString() + "\t" + controller_output.toString() + "\t" + error_avg.toString() + "\n";
+            text_buf = avg_dt.toString() + "\t" + centerx.toString() + "\t" + 
+                        controller_output.toString() + "\t" + error_avg.toString() + "\t" 
+                        (maxArea/(368.0*640.0)).toString() + "\n";
             logger.write(text_buf);
 
             previous_error = error_avg;
 
             speed = math.round(controller_output);
 
-            if (speed > 0){
+            if (speed > 0 && error > 7){
               console.log("moving left at ", speed);
               drone.counterClockwise(speed);
               setTimeout(function(){
@@ -170,37 +176,33 @@ setInterval(function() {
               //   drone.forward(5); 
               // },20);
             }
-            else if (speed < 0){
+            else if (speed < 0 && error < -7){
               console.log("moving right...", math.abs(speed));
               drone.clockwise(math.abs(speed)); // not sure if this should be a timeout function? if timeout, for how long?
               setTimeout(function(){
                   console.log("hover");
                   drone.stop(); 
               },20);
-              // setTimeout(function(){
-              //   drone.forward(5); 
-              // },20);
             }
-
-            setTimeout(function(){
+            else if (math.abs(error) < 7){ //is this the only option here? do else instead
+              console.log("forward..");
               drone.forward(5); 
-            },20);
-
-
-            // if (centerx > 640 || (speed < 5 && speed > -5)){ // outofbounds or error is not realistic 
-            //     drone.forward(4);
-            //     setTimeout(function(){
-            //       drone.stop(); 
-            //     },1500);
-            // }
+              setTimeout(function(){
+                drone.stop();
+              },20);
+            }
+            else {
+              console.log("what's here?", speed, error);
+            }
           }
 
 
         w.show(im);
-        
         w.blockingWaitKey(0, 50);
+
         w_copy.show(im_copy);
         w_copy.blockingWaitKey(0, 50);
+
         then = process.hrtime();
       }
     });

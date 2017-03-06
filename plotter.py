@@ -6,6 +6,7 @@ dt = []
 center = []
 controller_output = []
 error = []
+area_ratio = []
 
 words = []
 count = []
@@ -20,6 +21,7 @@ for l in file:
 	center.append(words[1])
 	controller_output.append(words[2])
 	error.append(words[3])
+	area_ratio.append(words[4])
 
 file.close()
 print count
@@ -27,18 +29,26 @@ print count
 plt.figure(1)
 plt.plot(count, dt)
 plt.title("dt")
+plt.grid(True)
 
 plt.figure(2)
 plt.plot(count, center)
 plt.title("center")
+plt.grid(True)
 
 plt.figure(3)
 plt.plot(count, controller_output)
 plt.title("controller_output")
+plt.grid(True)
 
 plt.figure(4)
 plt.plot(count,error)
 plt.title("error")
-
 plt.grid(True)
+
+plt.figure(5)
+plt.plot(count,area_ratio)
+plt.title("area_ratio")
+plt.grid(True)
+
 plt.show()
