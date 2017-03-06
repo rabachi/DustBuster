@@ -23,21 +23,8 @@ setInterval(function() {
     return;
   }
 
-    try {
-    cv.readImage(buf, function(err, im) {
-      if (err) {
-        console.log(err);
-      } else {
-        if (im.width() < 1 || im.height() < 1) {
-          console.log("no width or height");
-          return;
-        }
-        w.show(im);
-        w.blockingWaitKey(0, 50);
-      }
-    });
-  } catch(e) {
-    console.log(e);
-  }
-}, 100);
+    else{
+
+      mjpg.save("/Users/monicakhalil/DustBuster"); // i dont think this path would work on your computer...
+    }
 
