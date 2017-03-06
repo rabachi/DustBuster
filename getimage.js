@@ -38,8 +38,8 @@ previous_error = 0,
 integral = 0,
 derivative = 0,
 Kp = 0.5,
-Ki = 0.05,
-Kd = 0;
+Ki = 0.2,
+Kd = 0.1;
 
 
 var t_const = 0.25; // just a time constant for the speed.  
@@ -59,13 +59,15 @@ drone.connect(function() {
   },9000);
 
   setTimeout(function(){
+    console.log("start hover 1");
     drone.stop();
     //drone.forward(2);
   },12000);
 
   setTimeout(function(){
+    console.log("start hover 2");
     drone.stop();
-  },15000);
+  },20000);
 
   process.on('SIGINT',function(){
     console.log("Shutting down");
@@ -156,16 +158,21 @@ setInterval(function() {
 
             controller_output = Kp*error_avg+ Ki*integral + Kd*derivative;
 
-            text_buf = avg_dt.toString() + "\t" + centerx.toString() + "\t" + 
-                        controller_output.toString() + "\t" + error_avg.toString() + "\t" 
-                        (maxArea/(368.0*640.0)).toString() + "\n";
+            text_buf = avg_dt.toString() + "\t" + centerx.toString() + "\t" + controller_output.toString() + "\t" + error_avg.toString() + "\t" + maxArea.toString() + "\n";
             logger.write(text_buf);
 
             previous_error = error_avg;
 
             speed = math.round(controller_output);
-
-            if (speed > 0 && error > 7){
+            console.log("error: ", error);
+            if (math.abs(error) < 20){ 
+              console.log("forward..");
+              drone.forward(10); 
+              // setTimeout(function(){
+              //   drone.stop();
+              // },50);
+            }
+            else if (speed > 0){
               console.log("moving left at ", speed);
               drone.counterClockwise(speed);
               setTimeout(function(){
@@ -176,19 +183,12 @@ setInterval(function() {
               //   drone.forward(5); 
               // },20);
             }
-            else if (speed < 0 && error < -7){
+            else if (speed < 0){
               console.log("moving right...", math.abs(speed));
               drone.clockwise(math.abs(speed)); // not sure if this should be a timeout function? if timeout, for how long?
               setTimeout(function(){
                   console.log("hover");
                   drone.stop(); 
-              },20);
-            }
-            else if (math.abs(error) < 7){ //is this the only option here? do else instead
-              console.log("forward..");
-              drone.forward(5); 
-              setTimeout(function(){
-                drone.stop();
               },20);
             }
             else {

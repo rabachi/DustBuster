@@ -21,10 +21,11 @@ for l in file:
 	center.append(words[1])
 	controller_output.append(words[2])
 	error.append(words[3])
-	area_ratio.append(words[4])
+	area_ratio.append(float(words[4]))
 
 file.close()
-print count
+#print count
+print error
 
 plt.figure(1)
 plt.plot(count, dt)
