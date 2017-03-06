@@ -15,14 +15,15 @@ var drone = bebop.createClient(),
 
 var lower_green = [33, 88, 98];
 var upper_green = [88, 255, 255];
+
 var COLOR = [0,0,255];
 var thickness = 2;
 var c = null;
 var maxArea=0;
 var cnts = null,
-centerx = null,
-centery = null;
-var moments = null;
+    centerx = null,
+    centery = null,
+    moments = null;
 
 var dt_list = [0.2,0.2,0.2,0.2,0.2];
 var avg_dt = 0.2;
@@ -34,12 +35,12 @@ var then = process.hrtime(),
 
 var error = 0;  
 var controller_output = 0,
-previous_error = 0,
-integral = 0,
-derivative = 0,
-Kp = 0.5,
-Ki = 0.2,
-Kd = 0.1;
+    previous_error = 0,
+    integral = 0,
+    derivative = 0,
+    Kp = 0.5,
+    Ki = 0.2,
+    Kd = 0.1;
 
 
 var t_const = 0.25; // just a time constant for the speed.  
@@ -126,12 +127,8 @@ setInterval(function() {
             centery = math.round(moments.m01/moments.m00);
           }
           //console.log(centerx,centery);
-          
 
           //***what happens to centerx and centery when target is out of bounds?
-
-
-          //SO FAR SO GOOD!
           
           if (maxArea > 0){
             im.drawContour(cnts, c, COLOR, thick, lineType, maxLevel, [0, 0]);
@@ -168,9 +165,9 @@ setInterval(function() {
             if (math.abs(error) < 20){ 
               console.log("forward..");
               drone.forward(10); 
-              // setTimeout(function(){
-              //   drone.stop();
-              // },50);
+              setTimeout(function(){
+                drone.stop();
+              },20);
             }
             else if (speed > 0){
               console.log("moving left at ", speed);
@@ -179,9 +176,6 @@ setInterval(function() {
                   console.log("hover");
                   drone.stop(); 
               },20);
-              // setTimeout(function(){
-              //   drone.forward(5); 
-              // },20);
             }
             else if (speed < 0){
               console.log("moving right...", math.abs(speed));
