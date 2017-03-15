@@ -1,9 +1,9 @@
 
 // cant access internal storage of drone, save mjpeg stream instead..
 
-var bebop = require("../."),
+var bebop = require("node-bebop"),
 	fs = require('fs'),
-	options = {path: 'path for saving file' }, 
+	//options = {path: '' }, 
 	 cv = require("opencv");
 	
 
@@ -25,9 +25,25 @@ setInterval(function() {
   if (buf == null) {
     return;
   }
-	else {
-	fs.writeFile('drone.png', data, function(err){
-            if (err) throw err
-            console.log('pic saved.')
-        }); 
-}
+	try {
+    cv.readImage(buf, function(err, im) {
+      if (err) {
+        console.log(err);
+      } else {
+        if (im.width() < 1 || im.height() < 1) {
+          console.log("no width or height");
+          return;
+        }
+
+        im.save('drone.jpg');
+
+        // fs.writeFile('drone.jpg', im, function(err){
+        // if (err) throw err;
+        console.log('pic saved.');
+        // }); 
+      }
+    });
+  } catch(e){
+    console.log(e);
+  }
+},1000);

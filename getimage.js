@@ -28,6 +28,8 @@ var cnts = null,
 var dt_list = [0.2,0.2,0.2,0.2,0.2];
 var avg_dt = 0.2;
 
+
+
 var error_list = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
 var error_avg = 0;
 var then = process.hrtime(),
@@ -47,9 +49,17 @@ var t_const = 0.25; // just a time constant for the speed.
 var speed = 2; // speed to be changed to speed = error* t_const until target is reached, when target is reached, move forward with speed =10. 
 var flag = 0; // set flag =0
 
+var perWidth = 0;
+
 const lineType = 8;
 const maxLevel = 0;
 const thick = 1;
+const focalLength = 401.652173913,
+    known_width = 17.25;
+
+function find_distance(knownWidth, focalLength, perWidth){
+  return (knownWidth * focalLength) / perWidth;
+}
 
 drone.connect(function() {
   drone.MediaStreaming.videoEnable(1);
@@ -155,13 +165,15 @@ setInterval(function() {
 
             controller_output = Kp*error_avg+ Ki*integral + Kd*derivative;
 
-            text_buf = avg_dt.toString() + "\t" + centerx.toString() + "\t" + controller_output.toString() + "\t" + error_avg.toString() + "\t" + maxArea.toString() + "\n";
+            text_buf = avg_dt.toString() + "\t" + centerx.toString() + "\t" + controller_output.toString() + "\t" + error_avg.toString() + "\t"+ maxArea.toString() + "\n";
             logger.write(text_buf);
 
             previous_error = error_avg;
 
             speed = math.round(controller_output);
+
             console.log("error: ", error);
+            
             if (math.abs(error) < 20){ 
               console.log("forward..");
               drone.forward(10); 
@@ -204,3 +216,4 @@ setInterval(function() {
     console.log(e);
   }
 }, 100);
+
