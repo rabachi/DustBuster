@@ -7,6 +7,7 @@ center = []
 controller_output = []
 error = []
 area_ratio = []
+distance = []
 
 words = []
 count = []
@@ -22,6 +23,7 @@ for l in file:
 	controller_output.append(words[2])
 	error.append(words[3])
 	area_ratio.append(float(words[4]))
+	distance.append(float(words[5]))
 
 file.close()
 #print count
@@ -51,5 +53,11 @@ plt.figure(5)
 plt.plot(count,area_ratio)
 plt.title("area_ratio")
 plt.grid(True)
+
+plt.figure(6)
+plt.plot(count,distance)
+plt.title("distance")
+plt.grid(True)
+
 
 plt.show()

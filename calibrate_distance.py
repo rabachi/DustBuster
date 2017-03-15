@@ -57,10 +57,10 @@ IMAGE_PATHS = ["drone.jpg"]#, "images/3ft.png", "images/4ft.png"]
 # load the furst image that contains an object that is KNOWN TO BE 2 feet
 # from our camera, then find the paper marker in the image, and initialize
 # the focal length
-# image = cv2.imread(IMAGE_PATHS[0])
-# marker = find_marker(image)
-# focalLength = (marker[1][0] * KNOWN_DISTANCE) / KNOWN_WIDTH
-# print focalLength
+image = cv2.imread(IMAGE_PATHS[0])
+marker = find_marker(image)
+focalLength = (marker[1][0] * KNOWN_DISTANCE) / KNOWN_WIDTH
+print focalLength
 
 #114
 

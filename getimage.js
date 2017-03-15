@@ -23,7 +23,8 @@ var maxArea=0;
 var cnts = null,
     centerx = null,
     centery = null,
-    moments = null;
+    moments = null,
+    rect = null;
 
 var dt_list = [0.2,0.2,0.2,0.2,0.2];
 var avg_dt = 0.2;
@@ -32,6 +33,7 @@ var avg_dt = 0.2;
 
 var error_list = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
 var error_avg = 0;
+
 var then = process.hrtime(),
     dt = 0;
 
@@ -40,22 +42,27 @@ var controller_output = 0,
     previous_error = 0,
     integral = 0,
     derivative = 0,
-    Kp = 0.5,
-    Ki = 0.2,
-    Kd = 0.1;
+    Kp = 0.8,
+    Ki = 0.0,
+    Kd = 0,
+    K_forward = 0.04,
+    distance_thres = 25;
 
 
 var t_const = 0.25; // just a time constant for the speed.  
 var speed = 2; // speed to be changed to speed = error* t_const until target is reached, when target is reached, move forward with speed =10. 
 var flag = 0; // set flag =0
 
-var perWidth = 0;
+var perWidth = 0,
+    distance = 0,
+    distance_list = [0,0,0,0,0],
+    distance_avg = 0;
 
 const lineType = 8;
 const maxLevel = 0;
 const thick = 1;
 const focalLength = 401.652173913,
-    known_width = 17.25;
+      known_width = 17.25;
 
 function find_distance(knownWidth, focalLength, perWidth){
   return (knownWidth * focalLength) / perWidth;
@@ -75,10 +82,10 @@ drone.connect(function() {
     //drone.forward(2);
   },12000);
 
-  setTimeout(function(){
-    console.log("start hover 2");
-    drone.stop();
-  },20000);
+  // setTimeout(function(){
+  //   console.log("start hover 2");
+  //   drone.stop();
+  // },20000);
 
   process.on('SIGINT',function(){
     console.log("Shutting down");
@@ -117,7 +124,7 @@ setInterval(function() {
           im_copy.dilate(2);
           cnts = im_copy.findContours(cv.RETR_EXTERNAL);
           center = null; 
-          
+          maxArea = 0;
           //console.log(cnts.size());
           if (cnts.size() > 0) {
             c = 0;
@@ -141,9 +148,10 @@ setInterval(function() {
           //***what happens to centerx and centery when target is out of bounds?
           
           if (maxArea > 0){
-            im.drawContour(cnts, c, COLOR, thick, lineType, maxLevel, [0, 0]);
+            rect = cnts.minAreaRect(c);
+            im.rectangle([centerx-rect.size.width/2,centery-rect.size.height/2],[rect.size.width,rect.size.height],COLOR,2);
+            //im.drawContour(cnts, c, COLOR, thick, lineType, maxLevel, [0, 0]);
             //console.log("area: ", cnts.area(c));
-            //im.rectangle([centerx,centery],[],COLOR,2);
             im.rectangle([centerx,centery], [2,2],COLOR,2);
             error = 320 - centerx; 
             dt = process.hrtime(then)[1] / 1000000000.0;
@@ -162,10 +170,18 @@ setInterval(function() {
 
             
             //console.log(toFile);
-
             controller_output = Kp*error_avg+ Ki*integral + Kd*derivative;
 
-            text_buf = avg_dt.toString() + "\t" + centerx.toString() + "\t" + controller_output.toString() + "\t" + error_avg.toString() + "\t"+ maxArea.toString() + "\n";
+            if (math.abs(error) < 20){ 
+              perWidth = rect.size.width;
+              distance = find_distance(known_width,focalLength,perWidth);
+            }
+
+            distance_list.shift();
+            distance_list.push(distance);
+            distance_avg = math.mean(distance_list);
+
+            text_buf = avg_dt.toString() + "\t" + centerx.toString() + "\t" + controller_output.toString() + "\t" + error_avg.toString() + "\t"+ maxArea.toString() + "\t" + distance_avg.toString() + "\n";
             logger.write(text_buf);
 
             previous_error = error_avg;
@@ -173,10 +189,13 @@ setInterval(function() {
             speed = math.round(controller_output);
 
             console.log("error: ", error);
-            
-            if (math.abs(error) < 20){ 
-              console.log("forward..");
-              drone.forward(10); 
+
+            if (math.abs(error_avg) < 20){ 
+
+              if(distance_avg > distance_thres){
+                console.log("forward..", distance_avg);
+                drone.forward(distance_avg * K_forward); 
+              }
               setTimeout(function(){
                 drone.stop();
               },20);
@@ -201,7 +220,11 @@ setInterval(function() {
               console.log("what's here?", speed, error);
             }
           }
-
+          else{//maxArea =0 
+            
+            
+            console.log("maxArea was 0");
+          }
 
         w.show(im);
         w.blockingWaitKey(0, 50);
