@@ -1,8 +1,39 @@
 <!DOCTYPE html>
+
 <html>
     <head>
-        <meta charset="utf-8" />
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <!-- <script type="text/javascript" src="/flot/jquery.js"></script> -->
+		<script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+
+        <script type="text/javascript" src="http://www.pureexample.com/js/flot/jquery.flot.min.js"></script>
+        <script type="text/javascript" src="/flot/jquery.flot.time.js"></script>    
+		<script type="text/javascript" src="/flot/jquery.flot.axislabels.js"></script>
+
+        <script type="text/javascript">
+			var data = [[1, 130], [2, 40], [3, 80], [4, 160], [5, 159], [6, 370], [7, 330], [8, 350], [9, 370], [10, 400], [11, 330], [12, 350]];
+
+			var dataset = [{label: "line1",data: data}];
+
+			var options = {
+			    series: {
+			        lines: { show: true },
+			        points: {
+			            radius: 3,
+			            show: true
+			        }
+			    }
+			};
+ 
+	        $(document).ready(function () {
+	            $.plot($("#placeholder"), dataset, options);
+	        });
+		</script>
         <title>Socket.io</title>
+<!--         <style type="text/css">
+			body { font-family: Verdana, Arial, sans-serif; font-size: 12px; }
+			#placeholder { width: 450px; height: 200px; }
+		</style> -->
     </head>
  
     <body>
@@ -10,10 +41,13 @@
 
         <p><input type="button" value="Takeoff" id="takeoff" /></p>
 		<p><input type="button" value="Land" id="land" /></p>
-		<img id="video-frame"/>
+		<div style="width:640px;height:368px;"><img id="video-frame"/></div>
+		<p>Plot<div  id="placeholder" style="width:600px;height:300px;"></div></p>
 
-        <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+        
+        <!-- <script type="text/javascript" language="javascript" src="/flot/jquery.flot.js"></script> -->
         <script src="/socket.io/socket.io.js"></script>
+        
         <script>
             var socket = io.connect('http://localhost:8080');
             // socket.on('message', function(message) {
@@ -30,6 +64,8 @@
                 socket.emit('message', 'land');
             })
         </script>
+        <!-- <script type="text/javascript" language="javascript" src="jquery-1.7.2.min.js"></script> -->
+        
     </body>
 </html>
 

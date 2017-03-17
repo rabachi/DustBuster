@@ -1,0 +1,12 @@
+-Figure out how to import actual program into app.js
+	-will help getting the detection part
+	-including both masked and raw videos
+	-setting some variables thru gui
+-Figure out how to dynamically plot points from server side on client
+
+FOR NAVIGATION:
+	-finalize major issues 
+		-make sure it finds center and stays on it
+		-if starting on center moves forward and corrects BUT not overcorrects
+	****-OVERSHOOT happens because it doesn't stop in time, data lag -- account for data lag by building in a delay
+		-can turn around once reached target and fly in another direction (not important to set properly ... main thing is finding target and staying on target... building in delay should fix the issue)

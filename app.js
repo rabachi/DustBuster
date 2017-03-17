@@ -30,10 +30,10 @@ io.sockets.on('connection', function (socket) {
 
     socket.on('message', function (message) {
         if (message == "takeoff"){
-        	drone.takeoff();
+        	//drone.takeoff();
         }
         else if (message == "land"){
-        	drone.land();
+        	//drone.land();
         }
         console.log('A client is speaking to me! They’re saying: ' + message);
     });
