@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>Socket.io</title>
+    </head>
+ 
+    <body>
+        <h1>Communicating with socket .io!</h1>
+
+        <p><input type="button" value="Takeoff" id="takeoff" /></p>
+		<p><input type="button" value="Land" id="land" /></p>
+		<img id="video-frame"/>
+
+        <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+        <script src="/socket.io/socket.io.js"></script>
+        <script>
+            var socket = io.connect('http://localhost:8080');
+            // socket.on('message', function(message) {
+            //     alert('The server has a message for you: ' + message);
+            // })
+            socket.on('frame', function(frame){
+			  $('#video-frame').attr('src', 'data:image/jpg;base64,' + frame);
+			});
+
+            $('#takeoff').click(function () {
+                socket.emit('message', 'takeoff');
+            })
+            $('#land').click(function () {
+                socket.emit('message', 'land');
+            })
+        </script>
+    </body>
+</html>
+
+
+
+
+<!-- <html>
+<script language='javascript'>
+function call(name) {
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', name, true);
+  xhr.send();
+}
+</script>
+<body>
+	<a onclick="call('takeoff');">Takeoff</a>
+	<a onclick="call('land');">Land</a>
+	<img src="http://localhost:3000/videoStream"/>
+</body>
+</html> -->

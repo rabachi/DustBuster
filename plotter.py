@@ -35,7 +35,7 @@ plt.title("dt")
 plt.grid(True)
 
 plt.figure(2)
-plt.plot(count, center)
+plt.plot(count, center,'ro')
 plt.title("center")
 plt.grid(True)
 

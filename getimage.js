@@ -29,10 +29,17 @@ var cnts = null,
 var dt_list = [0.2,0.2,0.2,0.2,0.2];
 var avg_dt = 0.2;
 
-
+var last_move = 0;
 
 var error_list = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
 var error_avg = 0;
+
+error_y = 0;
+var centery_list = [184,184,184,184,184,184,184,184,184,184,184,184];
+var centery_avg = 0;
+
+var centerx_list = [320,320,320,320,320,320,320,320,320,320,320,320];
+var centerx_avg = 0;
 
 var then = process.hrtime(),
     dt = 0;
@@ -42,21 +49,21 @@ var controller_output = 0,
     previous_error = 0,
     integral = 0,
     derivative = 0,
-    Kp = 0.8,
-    Ki = 0.0,
-    Kd = 0,
-    K_forward = 0.04,
-    distance_thres = 25;
+    Kp = 0.2,
+    Ki = 0.015,
+    Kd = 0.009,
+    K_forward = 0.018,
+    distance_thres = 80;
 
 
 var t_const = 0.25; // just a time constant for the speed.  
 var speed = 2; // speed to be changed to speed = error* t_const until target is reached, when target is reached, move forward with speed =10. 
 var flag = 0; // set flag =0
-
+var iter = 0;
 var perWidth = 0,
     distance = 0,
-    distance_list = [0,0,0,0,0],
-    distance_avg = 0;
+    distance_list = [100,100,100,100,100],
+    distance_avg = 100;
 
 const lineType = 8;
 const maxLevel = 0;
@@ -153,7 +160,27 @@ setInterval(function() {
             //im.drawContour(cnts, c, COLOR, thick, lineType, maxLevel, [0, 0]);
             //console.log("area: ", cnts.area(c));
             im.rectangle([centerx,centery], [2,2],COLOR,2);
-            error = 320 - centerx; 
+
+            centerx_list.shift();
+            centerx_list.push(centerx);
+            centerx_avg = math.mean(centerx_list);
+
+            centery_list.shift();
+            centery_list.push(centery);
+            centery_avg = math.mean(centery_list);
+
+            error = 320 - centerx_avg; 
+            error_y = 184 - centery_avg;
+
+            if(error_y > 50) {
+              console.log("down");
+              drone.down(5);
+            }
+            else if (error_y < -50){
+              console.log("up");
+              drone.up(5);
+            }
+
             dt = process.hrtime(then)[1] / 1000000000.0;
 
             dt_list.shift();
@@ -164,7 +191,7 @@ setInterval(function() {
             error_list.push(error);
             error_avg = math.mean(error_list);
 
-            console.log(dt_list);
+            //console.log(dt_list);
             integral = integral + error_avg * avg_dt; //dt = 0.1 s
             derivative = (error_avg - previous_error) / avg_dt;
 
@@ -172,7 +199,7 @@ setInterval(function() {
             //console.log(toFile);
             controller_output = Kp*error_avg+ Ki*integral + Kd*derivative;
 
-            if (math.abs(error) < 20){ 
+            if (math.abs(error) < 30){ 
               perWidth = rect.size.width;
               distance = find_distance(known_width,focalLength,perWidth);
             }
@@ -181,50 +208,62 @@ setInterval(function() {
             distance_list.push(distance);
             distance_avg = math.mean(distance_list);
 
-            text_buf = avg_dt.toString() + "\t" + centerx.toString() + "\t" + controller_output.toString() + "\t" + error_avg.toString() + "\t"+ maxArea.toString() + "\t" + distance_avg.toString() + "\n";
-            logger.write(text_buf);
-
             previous_error = error_avg;
 
             speed = math.round(controller_output);
 
             console.log("error: ", error);
+            console.log("iter", iter);
+            if(iter >= 25){
+              text_buf = avg_dt.toString() + "\t" + centerx_avg.toString() + "\t" + controller_output.toString() + "\t" + error_avg.toString() + "\t"+ maxArea.toString() + "\t" + distance.toString() + "\n";
+            logger.write(text_buf);
+              if (math.abs(error_avg) < 30){ 
 
-            if (math.abs(error_avg) < 20){ 
+                if(distance_avg > distance_thres){
+                  console.log("forward..", distance_avg);
+                  drone.forward(distance_avg * K_forward); 
+                }
+                else{
+                  drone.land();
+                }
 
-              if(distance_avg > distance_thres){
-                console.log("forward..", distance_avg);
-                drone.forward(distance_avg * K_forward); 
-              }
-              setTimeout(function(){
-                drone.stop();
-              },20);
+                }
+                else if (speed > 0){
+                console.log("moving left at ", speed);
+                drone.left(speed);
+                // setTimeout(function(){
+                //     console.log("hover");
+                //     drone.stop(); 
+                // },60);
+                last_move = -1; //left
+                }
+                else if (speed < 0){
+                console.log("moving right...", math.abs(speed));
+                drone.right(math.abs(speed)); // not sure if this should be a timeout function? if timeout, for how long?
+                // setTimeout(function(){
+                //     console.log("hover");
+                //     drone.stop(); 
+                // },100);
+                last_move = 1; //right
+                }
+                else {
+                console.log("what's here?", speed, error);
+                }
+                }
+                else{//maxArea =0 
+                if (last_move == -1){//last move was left, try right
+                //cw
+                drone.clockwise(20);
+                }
+                else if (last_move == 1){
+                //ccw
+                drone.counterClockwise(20);
+                }
+                console.log("maxArea was 0");
+                }
             }
-            else if (speed > 0){
-              console.log("moving left at ", speed);
-              drone.counterClockwise(speed);
-              setTimeout(function(){
-                  console.log("hover");
-                  drone.stop(); 
-              },20);
-            }
-            else if (speed < 0){
-              console.log("moving right...", math.abs(speed));
-              drone.clockwise(math.abs(speed)); // not sure if this should be a timeout function? if timeout, for how long?
-              setTimeout(function(){
-                  console.log("hover");
-                  drone.stop(); 
-              },20);
-            }
-            else {
-              console.log("what's here?", speed, error);
-            }
-          }
-          else{//maxArea =0 
-            
-            
-            console.log("maxArea was 0");
-          }
+
+
 
         w.show(im);
         w.blockingWaitKey(0, 50);
@@ -233,10 +272,12 @@ setInterval(function() {
         w_copy.blockingWaitKey(0, 50);
 
         then = process.hrtime();
+        iter = iter + 1;
+        drone.stop();
       }
     });
   } catch(e) {
     console.log(e);
   }
-}, 100);
+}, 200);
 
