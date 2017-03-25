@@ -5,7 +5,6 @@
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
         <!-- <script type="text/javascript" src="/flot/jquery.js"></script> -->
 		<script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
-
         <script type="text/javascript" src="http://www.pureexample.com/js/flot/jquery.flot.min.js"></script>
         <script type="text/javascript" src="/flot/jquery.flot.time.js"></script>    
 		<script type="text/javascript" src="/flot/jquery.flot.axislabels.js"></script>
@@ -29,23 +28,51 @@
 	            $.plot($("#placeholder"), dataset, options);
 	        });
 		</script>
+
         <title>Socket.io</title>
-<!--         <style type="text/css">
-			body { font-family: Verdana, Arial, sans-serif; font-size: 12px; }
-			#placeholder { width: 450px; height: 200px; }
-		</style> -->
+        <link rel = "stylesheet" type = "text/css" href = "guistyle.css" />
     </head>
  
     <body>
-        <h1>Communicating with socket .io!</h1>
+        <h1>Welcome to DustBuster!</h1>
 
         <p><input type="button" value="Takeoff" id="takeoff" /></p>
 		<p><input type="button" value="Land" id="land" /></p>
-		<div style="width:640px;height:368px;"><img id="video-frame"/></div>
-		<p>Plot<div  id="placeholder" style="width:600px;height:300px;"></div></p>
+		<!-- Rectangular switch -->
+		<a>Turn on Manual Control</a>
+		<label class="switch">
+		  <input id="manualControl" type="checkbox">
+		  <div class="slider"></div>
+		</label>
+
+		<div class="after-box" id="dirtyclean"><span class="highlight"></span></div>
+        <script type="text/javascript">
+			document.getElementById("dirtyclean").innerHTML = "DIRTY";
+			document.getElementById("dirtyclean").style.backgroundColor = "red";
+			
+			// setTimeout(myfunction,3000);
+
+			// function myfunction(){
+			// 	document.getElementById("dirtyclean").innerHTML = "CLEAN";
+			// 	document.getElementById("dirtyclean").style.backgroundColor = "green";
+			// }
+			
+		</script>
+<!-- 		<script>
+    		$("p:contains('DIRTY')").css("background-color","red");
+    		$("p:contains('CLEAN')").css("background-color","green");
+		</script> -->
+
+
+		<div class="floating-box" style="width:640px;height:368px;"><img id="video-frame"/></div>
+
+
+		<div class="floating-box">Plot<div  id="placeholder" style="width:600px;height:300px;"></div></div>
 
         
         <!-- <script type="text/javascript" language="javascript" src="/flot/jquery.flot.js"></script> -->
+
+
         <script src="/socket.io/socket.io.js"></script>
         
         <script>
@@ -68,21 +95,3 @@
         
     </body>
 </html>
-
-
-
-
-<!-- <html>
-<script language='javascript'>
-function call(name) {
-  var xhr = new XMLHttpRequest();
-  xhr.open('GET', name, true);
-  xhr.send();
-}
-</script>
-<body>
-	<a onclick="call('takeoff');">Takeoff</a>
-	<a onclick="call('land');">Land</a>
-	<img src="http://localhost:3000/videoStream"/>
-</body>
-</html> -->

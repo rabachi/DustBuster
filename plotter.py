@@ -1,12 +1,11 @@
 from matplotlib import pyplot as plt
 import sys
 
-file = open("log.txt",'r')
+file = open("targetnotinviewsemisuccess.txt",'r')
 dt = []
 center = []
 controller_output = []
 error = []
-area_ratio = []
 distance = []
 
 words = []
@@ -22,8 +21,7 @@ for l in file:
 	center.append(words[1])
 	controller_output.append(words[2])
 	error.append(words[3])
-	area_ratio.append(float(words[4]))
-	distance.append(float(words[5]))
+	distance.append(float(words[4]))
 
 file.close()
 #print count
@@ -40,23 +38,24 @@ plt.title("center")
 plt.grid(True)
 
 plt.figure(3)
-plt.plot(count, controller_output)
+plt.plot(count[10:], controller_output[10:], 'bo-')
 plt.title("controller_output")
+plt.xlabel("Time (s)")
+plt.ylabel("Controller output as fraction of max speed (%)")
 plt.grid(True)
 
 plt.figure(4)
-plt.plot(count,error)
+plt.plot(count[10:],error[10:], 'rs')
 plt.title("error")
+plt.xlabel("Time (s)")
+plt.ylabel("Difference between center of image and target in image (pixels)")
 plt.grid(True)
 
 plt.figure(5)
-plt.plot(count,area_ratio)
-plt.title("area_ratio")
-plt.grid(True)
-
-plt.figure(6)
-plt.plot(count,distance)
+plt.plot(count[10:],distance[10:],'gs-')
 plt.title("distance")
+plt.xlabel("Time (s)")
+plt.ylabel("Distance to target (inches)")
 plt.grid(True)
 
 

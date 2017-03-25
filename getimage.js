@@ -26,19 +26,19 @@ var cnts = null,
     moments = null,
     rect = null;
 
-var dt_list = [0.2,0.2,0.2,0.2,0.2];
+var dt_list = [0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2,0.2];
 var avg_dt = 0.2;
 
-var last_move = 0;
+var last_move = -1;
 
-var error_list = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+var error_list = [0,0,0,0,0,0,0];
 var error_avg = 0;
 
 error_y = 0;
-var centery_list = [184,184,184,184,184,184,184,184,184,184,184,184];
+var centery_list = [184,184,184,184,184];
 var centery_avg = 0;
 
-var centerx_list = [320,320,320,320,320,320,320,320,320,320,320,320];
+var centerx_list = [320,320,320,320,320,320,320];
 var centerx_avg = 0;
 
 var then = process.hrtime(),
@@ -49,20 +49,20 @@ var controller_output = 0,
     previous_error = 0,
     integral = 0,
     derivative = 0,
-    Kp = 0.2,
-    Ki = 0.015,
-    Kd = 0.009,
-    K_forward = 0.018,
+    Kp = 0.18,
+    Ki = 0.016,
+    Kd = 0.01,
+    K_forward = 0.017,
     distance_thres = 80;
 
-
+var going_forward = 0;
 var t_const = 0.25; // just a time constant for the speed.  
 var speed = 2; // speed to be changed to speed = error* t_const until target is reached, when target is reached, move forward with speed =10. 
 var flag = 0; // set flag =0
 var iter = 0;
 var perWidth = 0,
     distance = 0,
-    distance_list = [100,100,100,100,100],
+    distance_list = [100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100],
     distance_avg = 100;
 
 const lineType = 8;
@@ -73,6 +73,10 @@ const focalLength = 401.652173913,
 
 function find_distance(knownWidth, focalLength, perWidth){
   return (knownWidth * focalLength) / perWidth;
+}
+
+function find_drone(){
+
 }
 
 drone.connect(function() {
@@ -118,17 +122,19 @@ setInterval(function() {
       if (err) {
         console.log(err);
       } else {
-        if (im.width() < 1 || im.height() < 1) {
-          console.log("no width or height");
-          return;
-        }
+          if (im.width() < 1 || im.height() < 1) {
+            console.log("no width or height");
+            return;
+          }
           // //console.log("width: ",im.width()); //640
           // //console.log("height: ",im.height()); //368
           im_copy = im.copy();
           im_copy.convertHSVscale();
+
           im_copy.inRange(lower_green, upper_green);
           im_copy.erode(2);
           im_copy.dilate(2);
+          im_copy2 = im_copy.copy();
           cnts = im_copy.findContours(cv.RETR_EXTERNAL);
           center = null; 
           maxArea = 0;
@@ -172,11 +178,11 @@ setInterval(function() {
             error = 320 - centerx_avg; 
             error_y = 184 - centery_avg;
 
-            if(error_y > 50) {
+            if(error_y < -60) {
               console.log("down");
               drone.down(5);
             }
-            else if (error_y < -50){
+            else if (error_y > 60){
               console.log("up");
               drone.up(5);
             }
@@ -199,7 +205,7 @@ setInterval(function() {
             //console.log(toFile);
             controller_output = Kp*error_avg+ Ki*integral + Kd*derivative;
 
-            if (math.abs(error) < 30){ 
+            if (math.abs(error_avg) < 30){ 
               perWidth = rect.size.width;
               distance = find_distance(known_width,focalLength,perWidth);
             }
@@ -213,67 +219,84 @@ setInterval(function() {
             speed = math.round(controller_output);
 
             console.log("error: ", error);
-            console.log("iter", iter);
-            if(iter >= 25){
-              text_buf = avg_dt.toString() + "\t" + centerx_avg.toString() + "\t" + controller_output.toString() + "\t" + error_avg.toString() + "\t"+ maxArea.toString() + "\t" + distance.toString() + "\n";
-            logger.write(text_buf);
+            
+
+            if(iter >= 10){
+
               if (math.abs(error_avg) < 30){ 
+                  controller_output = 0;  
 
-                if(distance_avg > distance_thres){
-                  console.log("forward..", distance_avg);
-                  drone.forward(distance_avg * K_forward); 
-                }
-                else{
-                  drone.land();
-                }
+                  if(distance_avg > distance_thres){
+                    console.log("forward..", distance_avg * K_forward);
+                    drone.forward(distance_avg * K_forward); 
+                  }
+                  else{
+                    drone.land();
+                  }
 
-                }
-                else if (speed > 0){
+              }
+              else if (speed > 0){
                 console.log("moving left at ", speed);
-                drone.left(speed);
-                // setTimeout(function(){
-                //     console.log("hover");
-                //     drone.stop(); 
-                // },60);
+                drone.counterClockwise(speed);
+                setTimeout(function(){
+                    console.log("hover");
+                    drone.stop(); 
+                },60);
                 last_move = -1; //left
-                }
-                else if (speed < 0){
+              }
+              else if (speed < 0){
                 console.log("moving right...", math.abs(speed));
-                drone.right(math.abs(speed)); // not sure if this should be a timeout function? if timeout, for how long?
-                // setTimeout(function(){
-                //     console.log("hover");
-                //     drone.stop(); 
-                // },100);
+                drone.clockwise(math.abs(speed)); // not sure if this should be a timeout function? if timeout, for how long?
+                setTimeout(function(){
+                    console.log("hover");
+                    drone.stop(); 
+                },60);
                 last_move = 1; //right
-                }
-                else {
+              }
+              else {
                 console.log("what's here?", speed, error);
-                }
-                }
-                else{//maxArea =0 
-                if (last_move == -1){//last move was left, try right
-                //cw
-                drone.clockwise(20);
-                }
-                else if (last_move == 1){
-                //ccw
-                drone.counterClockwise(20);
-                }
-                console.log("maxArea was 0");
-                }
+              }
+
+              text_buf = avg_dt.toString() + "\t" + centerx_avg.toString() + "\t" + (-1*controller_output).toString() + "\t" + error_avg.toString() + "\t"+ distance.toString() + "\n";
+              logger.write(text_buf);
             }
 
+            
+
+          }
+          else {//maxArea =0 
+            
+            if (last_move == -1){//last move was left, try right
+              //cw
+              drone.clockwise(70);
+            }
+            else if (last_move == 1){
+              //ccw
+              drone.counterClockwise(70);
+            }
+            
+            setTimeout(function(){
+              console.log("hover");
+              drone.stop(); 
+            },60);
+            
+            console.log("maxArea was 0");
+
+            controller_output = 0;
+          }
+        
 
 
+        console.log("iter", iter);
         w.show(im);
         w.blockingWaitKey(0, 50);
 
-        w_copy.show(im_copy);
+        w_copy.show(im_copy2);
         w_copy.blockingWaitKey(0, 50);
 
         then = process.hrtime();
         iter = iter + 1;
-        drone.stop();
+        // drone.stop();
       }
     });
   } catch(e) {

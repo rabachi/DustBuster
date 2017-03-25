@@ -35,7 +35,7 @@ setInterval(function() {
           return;
         }
 
-        im.save('drone.jpg');
+        im.save('drone2.jpg');
 
         // fs.writeFile('drone.jpg', im, function(err){
         // if (err) throw err;
