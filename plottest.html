@@ -15,6 +15,7 @@
 <script>
     var socket = io.connect('http://localhost:8080');
     var y = Math.random();
+    var gone = 0;
     // socket.on('message', function(message) {
     //     alert('The server has a message for you: ' + message);
     // })
@@ -29,6 +30,14 @@
 
     socket.on('messagevoltage',function(message){
         y = parseFloat(message); 
+        if (y < threshold && gone == 0){
+            gone = 1; 
+            document.getElementById("dirtyclean").textContent = "DIRTY";
+            //socket.emit('message', 'takeoff');
+        }
+        else{
+            document.getElementById("dirtyclean").textContent = "CLEAN";
+        }
     });
 
     $('#takeoff').click(function () {
@@ -52,7 +61,6 @@
             marginRight: 10,
             events: {
                 load: function () {
-
                     // set up the updating of the chart each second
                     var series = this.series[0];
                     setInterval(function () {
@@ -94,13 +102,12 @@
             enabled: false
         },
         series: [{
-            name: 'Random data',
+            name: 'Voc',
             data: (function () {
                 // generate an array of random data
                 var data = [],
                     time = (new Date()).getTime(),
                     i;
-
                 for (i = -19; i <= 0; i += 1) {
                     data.push({
                         x: time + i * 1000,
