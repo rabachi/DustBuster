@@ -27,4 +27,5 @@ setInterval(function() {
 
       mjpg.save("/Users/monicakhalil/DustBuster"); // i dont think this path would work on your computer...
     }
+  });
 

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <!-- <script type="text/javascript" src="/flot/jquery.js"></script> -->
+		<script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+        <script type="text/javascript" src="http://www.pureexample.com/js/flot/jquery.flot.min.js"></script>
+        <script type="text/javascript" src="/flot/jquery.flot.time.js"></script>    
+		<script type="text/javascript" src="/flot/jquery.flot.axislabels.js"></script>
+
+<!--         <script type="text/javascript">
+			var data = [[1, 130], [2, 40], [3, 80], [4, 160], [5, 159], [6, 370], [7, 330], [8, 350], [9, 370], [10, 400], [11, 330], [12, 350]];
+
+			var dataset = [{label: "line1",data: data}];
+
+			var options = {
+			    series: {
+			        lines: { show: true },
+			        points: {
+			            radius: 3,
+			            show: true
+			        }
+			    }
+			};
+ 
+	        $(document).ready(function () {
+	            $.plot($("#placeholder"), dataset, options);
+	        });
+		</script> -->
+
+        <title>DustBuster</title>
+        <link rel = "stylesheet" type = "text/css" href = "guistyle.css" />
+    </head>
+ 
+    <body>
+        <h1>Welcome to DustBuster!</h1>
+
+        <p><input type="button" value="Takeoff" id="takeoff" /></p>
+		<p><input type="button" value="Emergency Land" id="land" /></p>
+
+		<div class="after-box" id="dirtyclean"><span class="highlight"></span></div>
+        <script type="text/javascript">
+			document.getElementById("dirtyclean").innerHTML = "DIRTY";
+			document.getElementById("dirtyclean").style.backgroundColor = "red";
+			
+			// setTimeout(myfunction,3000);
+
+			// function myfunction(){
+			// 	document.getElementById("dirtyclean").innerHTML = "CLEAN";
+			// 	document.getElementById("dirtyclean").style.backgroundColor = "green";
+			// }
+			
+		</script>
+<!-- 		<script>
+    		$("p:contains('DIRTY')").css("background-color","red");
+    		$("p:contains('CLEAN')").css("background-color","green");
+		</script> -->
+
+
+		<div class="floating-box" style="width:640px;height:368px;"><img id="video-frame"/></div>
+
+
+<!-- 		<div class="floating-box">Plot<div  id="placeholder" style="width:600px;height:300px;"></div></div> -->
+
+        <span id="battery"></span>
+        <!-- <script type="text/javascript" language="javascript" src="/flot/jquery.flot.js"></script> -->
+
+        
+        <script src="/socket.io/socket.io.js"></script>
+        
+        <script>
+            var socket = io.connect('http://localhost:8080');
+            // socket.on('message', function(message) {
+            //     alert('The server has a message for you: ' + message);
+            // })
+            socket.on('frame', function(frame){
+			  $('#video-frame').attr('src', 'data:image/jpg;base64,' + frame);
+			});
+
+			socket.on('message', function(message){
+				// alert(message);
+				document.getElementById("battery").textContent = "Battery: " + message + "%";
+			});
+
+            $('#takeoff').click(function () {
+                socket.emit('message', 'takeoff');
+            })
+            $('#land').click(function () {
+                socket.emit('message', 'SIGINT');
+            })
+        </script>
+        <!-- <script type="text/javascript" language="javascript" src="jquery-1.7.2.min.js"></script> -->
+        
+    </body>
+</html>

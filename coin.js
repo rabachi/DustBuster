@@ -10,7 +10,7 @@ const lineType = 8;
 const maxLevel = 0;
 const thick = 1;
 
-cv.readImage('coin1.jpg', function(err, im) {
+cv.readImage('coin2.jpg', function(err, im) {
 	if (err) throw err;
 	if (im.width() < 1 || im.height() < 1) throw new Error('Image has no size');
 
@@ -44,6 +44,8 @@ cv.readImage('coin1.jpg', function(err, im) {
 	console.log(centerx,centery);
 
 	if (cnts.area(c) > 0){
+		rect = cnts.minAreaRect(c);
+		im.rectangle([centerx-rect.size.width/2,centery-rect.size.height/2],[rect.size.width,rect.size.height],COLOR,2);
 		im.drawContour(cnts, c, COLOR, thick, lineType, maxLevel, [0, 0]);
 		//im.rectangle([centerx,centery],[],COLOR,2);
 		im.rectangle([centerx,centery], [2,2],COLOR,2);

@@ -1,0 +1,38 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<title>Flot Scatter Graph</title>
+ 
+<style type="text/css">
+body { font-family: Verdana, Arial, sans-serif; font-size: 12px; }
+#placeholder { width: 450px; height: 200px; }
+</style>
+ 
+<!--[if lte IE 8]><script type="text/javascript" language="javascript" src="excanvas.min.js"></script><![endif]-->
+<script type="text/javascript" language="javascript" src="jquery-1.7.2.min.js"></script>
+<script type="text/javascript" language="javascript" src="jquery.flot.js"></script>
+ 
+<script type="text/javascript">
+var d1 = [[0,1],[1,2],[3,8],[5,4],[2,10],[1.2,9],[9,2],[46,41],[22,14],[20,12],[20,25],[7,5],[18,11],[31,20],[50,40],[24,36],[20,42],[33,41],[51,39],[11,28],[32,16],[38,40],[35,22],[41,30],[21,18]];
+ 
+$(document).ready(function() {
+    $.plot($("#placeholder"), [d1], {
+        series: {
+            points: {
+                radius: 3,
+                show: true,
+                fill: true,
+                fillColor:"#058DC7"
+            },
+            color: "#058DC7"
+        }
+    });
+});
+</script>
+</head>
+ 
+<body>
+<div id="placeholder"></div>
+</body>
+</html>
