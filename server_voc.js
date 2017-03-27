@@ -1,6 +1,6 @@
 var serialport = require('serialport');
-var portName = 'COM3';
-var sp = new serialport.SerialPort(portName, {
+var portName = '/dev/ttyACM0';
+var sp = new serialport(portName, {
     baudRate: 9600,
     dataBits: 8,
     parity: 'none',
