@@ -7,7 +7,10 @@ var bebop = require("node-bebop"),
 var drone = bebop.createClient(),
     mjpg = drone.getMjpegStream(),
     logger = fs.createWriteStream('log.txt', {flags:'w'}),
-    buf = null,
+    
+
+    
+var buf = null,
     text_buf = null,
     text_buffer = null,
     w = new cv.NamedWindow("Video_raw", 0),
@@ -75,9 +78,6 @@ function find_distance(knownWidth, focalLength, perWidth){
   return (knownWidth * focalLength) / perWidth;
 }
 
-function find_drone(){
-
-}
 
 drone.connect(function() {
   drone.MediaStreaming.videoEnable(1);
