@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+    	<title> DustBuster</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <!-- <script type="text/javascript" src="/flot/jquery.js"></script> -->
+		<script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+        <script type="text/javascript" src="http://www.pureexample.com/js/flot/jquery.flot.min.js"></script>
+        <script type="text/javascript" src="/flot/jquery.flot.time.js"></script>    
+		<script type="text/javascript" src="/flot/jquery.flot.axislabels.js"></script>
+
+        <script type="text/javascript">
+			var data = [[1, 130], [2, 40], [3, 80], [4, 160], [5, 159], [6, 370], [7, 330], [8, 350], [9, 370], [10, 400], [11, 330], [12, 350]];
+			var dataset = [{label: "line1",data: data}];
+			var options = {
+			    series: {
+			        lines: { show: true },
+			        points: {
+			            radius: 3,
+			            show: true
+			        }
+			    }
+			};
+ 
+	        $(document).ready(function () {
+	            $.plot($("#placeholder"), dataset, options);
+	        });
+		</script>
+
+        <title>Socket.io</title>
+        <link rel = "stylesheet" type = "text/css" href = "guinew.css" /> 
+
+    </head>
+
+
+
+ 
+    <body>
+    	<div id = "container" >
+       <div  id= "header"> 
+        <h1> Welcome to DustBuster!</h1>
+        <video width="600" controls>
+        <source src="movie.mp4" type="video/mp4">
+         <source src="movie.ogg" type="video/ogg">
+         Your browser does not support HTML5 video.
+        </video>
+        </div>
+
+        <p>
+        <input type = "button" class="round-button" value="Emergency Land" id="emergecyland" /></p>
+        
+
+		<div class="after-box" id="dirtyclean"><span class="blink"></span></div>
+        <script type="text/javascript">
+			document.getElementById("dirtyclean").innerHTML = "DIRTY";
+			//document.getElementById("dirtyclean").style.backgroundColor = "red";
+			
+			// setTimeout(myfunction,3000);
+			// function myfunction(){
+			// 	document.getElementById("dirtyclean").innerHTML = "CLEAN";
+			// 	document.getElementById("dirtyclean").style.backgroundColor = "green";
+			// }
+			
+		</script>
+<!-- 		<script>
+    		$("p:contains('DIRTY')").css("background-color","red");
+    		$("p:contains('CLEAN')").css("background-color","green");
+		</script> -->
+
+        <div id ="pilot">
+            <marquee behavior="scroll" bgcolor="#735678" loop="-1" width="20%" font="30%"> Drone Feed</marquee>
+            </div>
+		<div class="floating-box" style="width:640px;height:368px;"><img id="video-frame"/></div>
+
+
+		<div class="floating-box">Plot<div  id="placeholder" style="width:600px;height:300px;"></div></div>
+
+        <div class="side-box">VOC<div id="placeholder2" style="width:600px;height:300px;"></div></div>
+
+        <div class="after-box"></div>
+
+        
+        <!-- <script type="text/javascript" language="javascript" src="/flot/jquery.flot.js"></script> -->
+
+
+        <script src="/socket.io/socket.io.js"></script>
+        
+        <script>
+            var socket = io.connect('http://localhost:8080');
+            // socket.on('message', function(message) {
+            //     alert('The server has a message for you: ' + message);
+            // })
+            socket.on('frame', function(frame){
+			  $('#video-frame').attr('src', 'data:image/jpg;base64,' + frame);
+			});
+            $('#takeoff').click(function () {
+                socket.emit('message', 'takeoff');
+            })
+            $('#land').click(function () {
+                socket.emit('message', 'land');
+            })
+        </script>
+        <!-- <script type="text/javascript" language="javascript" src="jquery-1.7.2.min.js"></script> -->
+        </div>
+    </body>
+</html>
