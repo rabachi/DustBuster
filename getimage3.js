@@ -6,8 +6,13 @@ var cv = require("opencv"),
     time = require('time'),
     events = require('events'),
     serialport = require('serialport');
+var express = require('express');
+var path = require('path')
+    url = require('url');
 
-var portName = '/dev/ttyACM0';
+var app = express();
+
+var portName = '/dev/tty.usbmodem1411';
 var sp = new serialport(portName, {
     baudRate: 9600,
     dataBits: 8,
@@ -17,14 +22,25 @@ var sp = new serialport(portName, {
     parser: serialport.parsers.readline("\r\n")
 });
 
-
-// Loading the index file . html displayed to the client
-var server = http.createServer(function(req, res) {
-    fs.readFile('./plottest.html', 'utf-8', function(error, content) {
-        res.writeHead(200, {"Content-Type": "text/html"});
-        res.end(content);
-    });
+var server = http.createServer(app);
+var io = require('socket.io').listen(server);
+app.use(express.static(path.join(__dirname, 'public')));
+app.get('/',function(req, res) {
+  fs.readFile(__dirname+'/public/index2.html', 'utf-8', function(error, content){
+    res.writeHead(200, {"Content-Type": "text/html"});
+    res.end(content);
+  });
 });
+
+
+
+// // Loading the index file . html displayed to the client
+// var server = http.createServer(function(req, res) {
+//     fs.readFile('./plottest.html', 'utf-8', function(error, content) {
+//         res.writeHead(200, {"Content-Type": "text/html"});
+//         res.end(content);
+//     });
+// });
 
 var drone = bebop.createClient(),
     mjpg = drone.getMjpegStream(),
@@ -371,7 +387,7 @@ io.sockets.on('connection', function (socket) {
     });
 });
 
-server.listen(8080);
+app.listen(8080);
 
 
 

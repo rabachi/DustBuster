@@ -1,0 +1,141 @@
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+}
+body{
+  background-image:url(bck2.jpg);
+  background-repeat: repeat-x;
+
+}
+
+
+.round-button {
+    display:block;
+    width:110px;
+    height: 70px;
+    line-height:60px;
+    border: 2px solid #A9A9A9;
+    border-radius: 50%;
+    color: black;
+    text-align: center;
+    text-decoration:none;
+    background: #ff0000;
+    box-shadow: 0 0 3px gray;
+    font-size:11px;
+    white-space: normal;
+    font-weight:bold;
+}
+.round-button:hover {
+    background: #8B0000;
+}
+
+#content{
+background-color: grey;
+width: 800px;
+margin-right: auto;
+margin-left: auto;
+
+}
+
+#header {
+color: purple;
+text-align: center;
+}
+
+/* Hide default HTML checkbox */
+.switch input {display:none;}
+
+/* The slider */
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: #2196F3;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(26px);
+  -ms-transform: translateX(26px);
+  transform: translateX(26px);
+}
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+
+.floating-box {
+  display: inline-block;
+  width: 640px;
+  height: 368px;
+  margin: 10px;
+  border: 3px solid #0c152d;;
+  background-color: #f2e6ff;
+  position: relative;
+
+}
+
+.side-box {
+  display: inline-block;
+  width: 640px;
+  height: 368px;
+  margin: 10px;
+  border: 3px solid #0c152d;;
+ 
+  float:right;
+  top:600px;
+  position: absolute;
+  font-size:14px;
+}
+
+/*
+.after-box {
+text-decoration: blink;
+text-indent: 1000px;
+color:red;
+font-size:25px;
+bottom:20px;
+}
+*/
+#pilot{
+  text-indent: 30px;
+  font-size:20px;
+}
+
+#VOC{
+  text-indent: 30px;
+  font-size:20px;
+  float: right;
+  
+}
