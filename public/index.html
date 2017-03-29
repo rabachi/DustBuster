@@ -1,59 +1,75 @@
-<!DOCTYPE html>
-
+ <!DOCTYPE html>
+<!-- Template by html.am -->
 <html>
-    <head>
-        <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
-
+	<head>
+		<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
         <script src="https://code.highcharts.com/highcharts.js"></script>
         <script src="https://code.highcharts.com/modules/exporting.js"></script>
-
         <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
-
-        <script src="/socket.io/socket.io.js"></script>
-        
-<!--         <script type="text/javascript" src="front.js"></script> -->
-
-    	<title> DustBuster</title>
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-
-        <link rel = "stylesheet" type = "text/css" href = "css/guinew.css"/> 
-
-    </head>
-
-    <body>
-     	<div id = "container" >
-       <div  id= "header"> 
-        <h1> Welcome to DustBuster!</h1>
-        <video width="600" controls>
-        <source src="movie.mp4" type="video/mp4">
-         <source src="movie.ogg" type="video/ogg">
-         Your browser does not support HTML5 video.
-        </video>
-        </div>
-
-        <p>
-        <input type = "button" class="round-button" value="Emergency Land" id="emergecyland" /></p>
-        
-        <p><input type="button" value="Takeoff" id="takeoff" /></p>
-
-		<div class="after-box" id="dirtyclean">DIRTY<span class="blink"></span></div>
-        
-
-        <div id ="pilot">
-            <marquee behavior="scroll" bgcolor="#735678" loop="-1" width="20%" font="30%"> Drone Feed</marquee>
-            </div>
-
-        <div id ="VOC">
-            <marquee behavior="scroll" bgcolor="#735678" loop="-1" width="80%" font="30%">Open Circuit Voltage of Panel</marquee>
-            </div>
 		
-        <div class="floating-box" style="width:640px;height:368px;"><img id="video-frame"/></div>
+		<link rel="stylesheet" type="text/css" href="css/style.css">
+
+		<script src="/socket.io/socket.io.js"></script>
+
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+		<title>DustBuster</title>
+				
+	</head>
+	
+	<body>		
+
+		<header id="header">
+			<div id="logo">
+				<h1> <br>Welcome to DustBuster</h1>
+			</div>
+		</header>
+				
+		<main>
+			<div class="innertube">
+				
+				<h1><br></h1>
+				<p>
+				<div id ="pilot">
+           		 <marquee behavior="scroll" bgcolor="#003366" loop="-1" width="120%" font="30%"> Drone Feed</marquee>
+            	</div>
+
+        		<div id ="VOC">
+            	<marquee behavior="scroll" bgcolor="#003366" loop="-1" width="120%" font="30%">Open Circuit Voltage of Panel</marquee>
+           		 </div>
+		
+       			 <div class="floating-box" style="width:550px;height:300px;"><img id="video-frame"/></div>
 
 
-        <div id="plot" class="side-box" style="width:600px;height:300px;"></div>
+       		 	<div id="plot" class="side-box" style="width:600px;height:300px;"></div>
 
-        <div class="after-box"></div>
-        <script type="text/javascript">
+        		<div class="after-box"></div>
+
+				</p>
+				
+			</div>
+		</main>
+
+		<nav id="nav">
+			<div class="innertube">
+				<h1><br><br></h1>
+					  				
+				<h1><br>Control Buttons</h1>
+				<ul>
+					<input type = "button" class="round-button" value="Emergency Land" id="emergencyland"/></p>
+
+					<input class ="button" type="button" value="Takeoff" id="takeoff"/></p>
+				</ul>
+				<h1><br>Panel Status</h1>
+				<ul>
+				<!-- where dirty or clean is -->
+				<div class="after-box" id="dirtyclean">DIRTY<span class="blink"></span></div>
+
+				</ul>
+				</div>
+		</nav>	
+	<!-- where javascript is -->
+	    <script type="text/javascript">
             var socket = io.connect('http://localhost:8080');
             var y = Math.random();
             var gone = 0;
@@ -178,8 +194,8 @@
                 }())
                 }]
             });
-            });
-            </script>
-        </div>
-    </body>
+          });
+        </script>
+
+	</body>
 </html>
