@@ -3,15 +3,19 @@
 <html>
     <head>
         <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+
         <script src="https://code.highcharts.com/highcharts.js"></script>
         <script src="https://code.highcharts.com/modules/exporting.js"></script>
+
         <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
 
+        <script src="/socket.io/socket.io.js"></script>
+        
+<!--         <script type="text/javascript" src="front.js"></script> -->
 
     	<title> DustBuster</title>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 
-        <title>Socket.io</title>
         <link rel = "stylesheet" type = "text/css" href = "css/guinew.css"/> 
 
     </head>
@@ -35,7 +39,7 @@
 		<div class="after-box" id="dirtyclean">DIRTY<span class="blink"></span></div>
         
 
-         <div id ="pilot">
+        <div id ="pilot">
             <marquee behavior="scroll" bgcolor="#735678" loop="-1" width="20%" font="30%"> Drone Feed</marquee>
             </div>
 
@@ -49,46 +53,61 @@
         <div id="plot" class="side-box" style="width:600px;height:300px;"></div>
 
         <div class="after-box"></div>
-
-
-        <script src="node_modules/socket.io/socket.io.js"></script>
-        
-        <script>
+        <script type="text/javascript">
             var socket = io.connect('http://localhost:8080');
             var y = Math.random();
             var gone = 0;
             // socket.on('message', function(message) {
             //     alert('The server has a message for you: ' + message);
             // })
+
             socket.on('frame', function(frame){
               $('#video-frame').attr('src', 'data:image/jpg;base64,' + frame);
             });
 
-            socket.on('messagebattery', function(message){
-              // alert(message);
-              document.getElementById("battery").textContent = "Battery: " + message + "%";
-            });
+            socket.on('message', function(message){
+                msg_array = message.split(",");
 
-            socket.on('messagevoltage',function(message){
-                y = parseFloat(message); 
-                if (y < threshold && gone == 0){
-                    gone = 1; 
-                    document.getElementById("dirtyclean").textContent = "DIRTY";
-                    //socket.emit('message', 'takeoff');
+                if (msg_array[0] == "battery"){
+                    document.getElementById("battery").textContent = "Battery: " + msg_array[1] + "%";
                 }
-                else{
-                    document.getElementById("dirtyclean").textContent = "CLEAN";
+                else if (msg_array[0] == "voltage"){
+                    y = parseFloat(msg_array[1]);
+                    if (y < threshold && gone == 0){
+                        gone = 1; 
+                        document.getElementById("dirtyclean").textContent = "DIRTY";
+                        //socket.emit('message', 'takeoff');
+                    }
+                    else {
+                        document.getElementById("dirtyclean").textContent = "CLEAN";
+                    }
                 }
             });
+            // socket.on('messagebattery', function(message){
+            //   // alert(message);
+            //   document.getElementById("battery").textContent = "Battery: " + message + "%";
+            // });
+
+            // socket.on('messagevoltage',function(message){
+            //     y = parseFloat(message); 
+            //     if (y < threshold && gone == 0){
+            //         gone = 1; 
+            //         document.getElementById("dirtyclean").textContent = "DIRTY";
+            //         //socket.emit('message', 'takeoff');
+            //     }
+            //     else{
+            //         document.getElementById("dirtyclean").textContent = "CLEAN";
+            //     }
+            // });
 
             $('#takeoff').click(function () {
                 socket.emit('message', 'takeoff');
-            })
-            $('#land').click(function () {
+            });
+            $('#emergencyland').click(function () {
                 socket.emit('message', 'land');
-            })
+            });
 
-          $(document).ready(function () {
+            $(document).ready(function () {
             Highcharts.setOptions({
                 global: {
                     useUTC: false
@@ -112,58 +131,55 @@
                         }
                     }
                 },
+            title: {
+                text: 'Live random data'
+            },
+            xAxis: {
+                type: 'datetime',
+                tickPixelInterval: 150
+            },
+            yAxis: {
                 title: {
-                    text: 'Live random data'
+                    text: 'Value'
                 },
-                xAxis: {
-                    type: 'datetime',
-                    tickPixelInterval: 150
-                },
-                yAxis: {
-                    title: {
-                        text: 'Value'
-                    },
-                    plotLines: [{
-                        value: 0,
-                        width: 1,
-                        color: '#808080'
-                    }]
-                },
-                tooltip: {
-                    formatter: function () {
-                        return '<b>' + this.series.name + '</b><br/>' +
-                            Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) + '<br/>' +
-                            Highcharts.numberFormat(this.y, 2);
+                plotLines: [{
+                    value: 0,
+                    width: 1,
+                    color: '#808080'
+                }]
+            },
+            tooltip: {
+                formatter: function () {
+                    return '<b>' + this.series.name + '</b><br/>' +
+                        Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) + '<br/>' +
+                        Highcharts.numberFormat(this.y, 2);
+                }
+            },
+            legend: {
+                enabled: false
+            },
+            exporting: {
+                enabled: false
+            },
+            series: [{
+                name: 'Voc',
+                data: (function () {
+                    // generate an array of random data
+                    var data = [],
+                        time = (new Date()).getTime(),
+                        i;
+                    for (i = -19; i <= 0; i += 1) {
+                        data.push({
+                            x: time + i * 1000,
+                            y: Math.random()
+                        });
                     }
-                },
-                legend: {
-                    enabled: false
-                },
-                exporting: {
-                    enabled: false
-                },
-                series: [{
-                    name: 'Voc',
-                    data: (function () {
-                        // generate an array of random data
-                        var data = [],
-                            time = (new Date()).getTime(),
-                            i;
-                        for (i = -19; i <= 0; i += 1) {
-                            data.push({
-                                x: time + i * 1000,
-                                y: Math.random()
-                            });
-                        }
-                        return data;
-                    }())
+                    return data;
+                }())
                 }]
             });
-          });
-
-        </script>
-
-
+            });
+            </script>
         </div>
     </body>
 </html>

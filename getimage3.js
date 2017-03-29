@@ -12,7 +12,10 @@ var path = require('path')
 
 var app = express();
 
-var portName = '/dev/tty.usbmodem1411';
+//For romine: ttyACM0
+//For mioncia: tty.usbmodem1411
+
+var portName = '/dev/ttyACM0';
 var sp = new serialport(portName, {
     baudRate: 9600,
     dataBits: 8,
@@ -22,16 +25,25 @@ var sp = new serialport(portName, {
     parser: serialport.parsers.readline("\r\n")
 });
 
+// var server = http.createServer(function(req, res) {
+//     fs.readFile('plottest.html', 'utf-8', function(error, content) {
+//         res.writeHead(200, {"Content-Type": "text/html"});
+//         res.end(content);
+//     });
+// });
 var server = http.createServer(app);
 var io = require('socket.io').listen(server);
+
 app.use(express.static(path.join(__dirname, 'public')));
+
+app.use('/javascripts', express.static(__dirname + '/javascripts'));
+
 app.get('/',function(req, res) {
   fs.readFile(__dirname+'/public/index2.html', 'utf-8', function(error, content){
     res.writeHead(200, {"Content-Type": "text/html"});
     res.end(content);
   });
 });
-
 
 
 // // Loading the index file . html displayed to the client
@@ -45,7 +57,6 @@ app.get('/',function(req, res) {
 var drone = bebop.createClient(),
     mjpg = drone.getMjpegStream(),
     logger = fs.createWriteStream('log.txt', {flags:'w'}),
-    io = require('socket.io').listen(server),
     eventEmitter = new events.EventEmitter();
 
 var go = false;
@@ -149,12 +160,12 @@ mjpg.on("data", function(data) {
 
 drone.on("battery", function (data) {
   battery_level = data;
-  io.emit('messagebattery', data.toString());
+  io.emit('message', "battery," + data.toString());
   //console.log(data);
 });
 
 sp.on('data', function(input) {
-    io.emit('messagevoltage', input.toString());
+    io.emit('message', "voltage," + input.toString());
 });
 
 var startRoutine = function startRoutine(){
@@ -387,7 +398,7 @@ io.sockets.on('connection', function (socket) {
     });
 });
 
-app.listen(8080);
+server.listen(8080);
 
 
 
